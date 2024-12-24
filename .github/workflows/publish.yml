@@ -3,29 +3,63 @@ name: Publish to PyPI
 on:
   push:
     tags:
-      - 'v*'  # Trigger on version tags
+      - 'v*.*.*'
+
+permissions:
+  contents: write
+  id-token: write
 
 jobs:
-  publish:
+  create-release:
+    name: Create Release
     runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/labpaper
     steps:
-      - uses: actions/checkout@v3
-      
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.8'
-      
-      - name: Install build dependencies
+          python-version: '3.12'
+
+      - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install build twine
-      
+          pip install build twine sphinx sphinx-rtd-theme
+
+      - name: Build Documentation
+        run: |
+          cd docs
+          make html
+          cd ..
+
       - name: Build package
         run: python -m build
-      
+
+      - name: Check the built package
+        run: twine check dist/*
+
+      - name: List built package contents
+        run: tar -tzf dist/*.tar.gz
+
       - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+
+      - name: Get tag message
+        id: tag_message
+        run: |
+          echo "TAG_MESSAGE=$(git for-each-ref --format='%(subject)' $(git for-each-ref --format='%(refname)' | grep ${GITHUB_REF}))" >> $GITHUB_ENV
+
+      - name: Create Release and Upload Assets
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: |
+            dist/*.whl
+            dist/*.tar.gz
+          body: ${{ env.TAG_MESSAGE }}
         env:
-          TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
-        run: twine upload dist/* 
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

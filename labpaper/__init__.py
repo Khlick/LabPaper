@@ -1,6 +1,6 @@
 """LabPaper - A Jupyter notebook exporter for academic papers using Tufte style"""
 
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 
 from .exporters import SpringerNaturePDF
 from .preprocessors import PythonMarkdownPreprocessor, PygmentizePreprocessor
