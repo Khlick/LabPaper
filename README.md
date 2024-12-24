@@ -36,7 +36,10 @@ jupyter nbconvert --to nature your_notebook.ipynb
 ## Requirements
 
 - Python ≥ 3.11
-- nbconvert ≥ 7.0.0
+- Jupyter ≥ 7.0.0
+- nbconvert ≥ 7.16.0
+- pandoc >= 3.6
+- A LaTeX distribution (e.g., TeX Live, MiKTeX)
 - Other dependencies are handled automatically during installation
 
 ## Development

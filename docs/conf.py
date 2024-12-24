@@ -3,8 +3,8 @@ import sys
 sys.path.insert(0, os.path.abspath('..'))
 
 project = 'LabPaper'
-copyright = '2023'
-author = 'Khris Griffis'
+copyright = '2024-2025'
+author = 'Khris Griffis, Ph.D.'
 
 extensions = [
     'sphinx.ext.autodoc',
