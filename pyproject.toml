@@ -1,0 +1,69 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "labpaper"
+dynamic = ["version"]
+authors = [
+    { name = "Khris Griffis", email = "khris.griffis.phd@gmail.com" },
+]
+description = "A Jupyter notebook exporter for academic papers using Tufte style"
+readme = "README.md"
+requires-python = ">=3.11"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: BSD License",
+    "Operating System :: OS Independent",
+    "Framework :: Jupyter",
+    "Framework :: Jupyter :: JupyterLab",
+]
+dependencies = [
+    "nbconvert>=7.0.0",
+    "traitlets>=5.0.0",
+    "jupyter_core>=4.0.0",
+    "jinja2>=3.0.0",
+    "nbformat>=5.0.0",
+    "nameparser>=1.1.0",
+    "usaddress>=0.5.10",  # For parsing addresses
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov>=4.0",  # For coverage reporting
+    "black>=22.0",
+    "isort>=5.0",
+    "flake8>=4.0",
+    "build>=0.7.0",     # For building package
+    "twine>=4.0.0"      # For publishing
+]
+docs = [
+    "sphinx>=4.0",
+    "sphinx-rtd-theme>=1.0",
+    "myst-parser>=0.18",
+]
+
+[tool.setuptools.dynamic]
+version = {attr = "labpaper.__version__"}
+
+[tool.setuptools.packages.find]
+include = ["labpaper", "labpaper.*"]
+
+[project.entry-points."nbconvert.exporters"]
+nature = "labpaper.exporters:SpringerNaturePDF"
+
+[project.entry-points."nbconvert.preprocessors"]
+python-markdown = "labpaper.preprocessors.PythonMarkdownPreprocessor"
+pygmentize-code = "labpaper.preprocessors.PygmentizePreprocessor"
+
+[project.entry-points."nbconvert.templates"]
+naturePDF = "labpaper.templates.nature:NatureTemplate"
+
+[tool.black]
+line-length = 100
+target-version = ['py311']
+
+[tool.isort]
+profile = "black"
+line_length = 100

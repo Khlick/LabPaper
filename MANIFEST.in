@@ -1,0 +1,25 @@
+include LICENSE
+include README.md
+include .readthedocs.yaml
+
+# Documentation
+recursive-include docs *.md
+recursive-include docs *.py
+recursive-include docs Makefile
+prune docs/_build
+
+# Package data
+recursive-include labpaper/templates *.tex.j2
+recursive-include labpaper/templates *.html.j2
+recursive-include labpaper/templates *.tplx
+recursive-include labpaper/texmf/tex/latex *.cls
+recursive-include labpaper/texmf/tex/latex *.sty
+recursive-include labpaper/texmf/bibtex/bst *.bst
+recursive-include labpaper/texmf/fonts *
+
+# Exclude development and cache files
+global-exclude *.py[cod]
+global-exclude __pycache__
+global-exclude *.so
+global-exclude .DS_Store
+global-exclude *.egg-info 

@@ -1,0 +1,145 @@
+((* extends 'contents.tex.j2' *))
+
+((= Structure of the document=))
+((= Header (block header)=))
+((= Document Class (block docclass) =))
+((= Packages (block packages) =))
+((= Definitions (block definitions) =))
+((= Body (block body) 
+super opens \begin{document}, then
+Predoc comes AFTER \begin{document} before document contents
+then loop over cell blocks followed by
+Postdoc (block postdoc) and finally, \end{document
+}=))
+
+((* block header *))
+% Nature Journal Template for nbconvert
+% Created by Khris Griffis, Ph.D. (khris.griffis.phd@gmail.com)
+% Based on nbconvert 7.x (https://nbconvert.readthedocs.io/)
+%
+% This template is part of the LabPaper Python module which provides
+% a Nature journal style template for converting Jupyter notebooks to LaTeX.
+% It extends the base nbconvert LaTeX template to produce manuscripts
+% formatted according to Nature journal guidelines.
+%
+% The template is designed to work with nbconvert 7.x and uses Jinja2
+% templating syntax with custom delimiters to avoid conflicts
+% with LaTeX commands.
+((* endblock header *))
+
+((* block docclass *))
+\documentclass[pdflatex,((*- if nb.metadata.labpaper.referee -*)),referee((*- endif -*))((*- if nb.metadata.labpaper.line_numbers -*)),lineno((*- endif -*))((*- if nb.metadata.labpaper.bibliography_style -*)),((( nb.metadata.labpaper.bibliography_style )))((*- endif -*))]{sn-jnl}
+((* endblock docclass *))
+
+((* block packages *))
+\usepackage{multirow}%
+\usepackage{amsmath,amssymb,amsfonts}%
+\usepackage{amsthm}%
+\usepackage{mathrsfs}%
+\usepackage[title]{appendix}%
+\usepackage{textcomp}%
+\usepackage{manyfoot}%
+((* if nb.metadata.labpaper.separate_fig_and_tab_page -*))
+\usepackage{endfloat}
+((*- endif *))
+
+((( super() )))
+((* endblock packages *))
+
+((* block definitions *))
+% Adjust author address font size
+\renewcommand{\addressfont}{\scriptsize}
+% Adjust layout and numbering for class style
+\raggedbottom
+\unnumbered
+
+% Prevent overflowing lines due to hard-to-break entities
+\sloppy
+
+% Colors for the hyperref package
+\definecolor{urlcolor}{RGB}{0,37,178}
+\definecolor{linkcolor}{RGB}{181,54,3}
+\definecolor{citecolor}{RGB}{31,138,28}
+
+% Setup hyperref package
+\hypersetup{
+  breaklinks=true,  % so long urls are correctly broken across lines
+  colorlinks=true,
+  urlcolor=urlcolor,
+  linkcolor=linkcolor,
+  citecolor=citecolor,
+  }
+
+((( super() )))
+
+((= Development
+% For development, to be removed before release
+\newcommand{\wrapblock}[2]{
+    \noindent
+    \fbox{\parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule}{
+        \textbf{#1}\par
+      #2
+    }}
+}
+=))
+((* endblock definitions *)) 
+
+((= Append Bibliography =))
+((* block bibliography *))
+((*- if nb.metadata.labpaper.needs_bibliography -*))
+\bibliography{references}
+((*- endif -*))
+((* endblock bibliography *)) 
+
+
+((= Development ------------------------------------------------------------- 
+
+((*- block data_html -*))
+\wrapblock{HTML Data}{
+  ((( super() )))
+}
+((* endblock -*))
+
+((*- block data_markdown -*))
+\wrapblock{Markdown Data}{
+  ((( super() )))
+}
+((* endblock -*))
+
+((*- block data_jpg -*))
+\wrapblock{JPG Data}{
+  ((( super() )))
+}
+((* endblock -*))
+
+((*- block data_text -*))
+\wrapblock{Plain Text Data}{
+  ((( super() )))
+}
+((* endblock -*))
+
+((*- block data_javascript -*))
+\wrapblock{JavaScript Data}{
+  ((( super() )))
+}
+((* endblock -*))
+
+((*- block data_widget_view -*))
+\wrapblock{Widget View}{
+  ((( super() )))
+}
+((* endblock -*))
+
+((*- block data_other -*))
+\wrapblock{Other Data}{
+  ((( super() )))
+}
+((* endblock -*))
+
+((*- block stream -*))
+\wrapblock{Stream}{%
+((( super() )))%
+}
+((* endblock -*))
+
+=))

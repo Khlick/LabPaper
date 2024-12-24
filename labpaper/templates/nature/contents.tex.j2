@@ -1,0 +1,449 @@
+((*- extends 'display.tex.j2' -*))
+
+((* block docclass *))
+\documentclass[pdflatex]{sn-jnl}
+((* endblock docclass *))
+
+((*- block packages -*))
+% For placing figures
+\usepackage{graphicx}
+% Code highlighting packages
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{fancyvrb}
+% Pandoc table support
+\usepackage{booktabs}%
+\usepackage{longtable}%
+\usepackage{array}     % table support for pandoc >= 2.11.3
+\usepackage{calc}      % table minipage width calculation for pandoc >= 2.11.1
+\usepackage[inline]{enumitem} % IRkernel/repr support (it uses the enumerate* environment)
+\usepackage[normalem]{ulem} % ulem is needed to support strikethroughs (\sout)
+                            % normalem makes italics be italics, not underlines
+\usepackage{soul}      % strikethrough (\st) support for pandoc >= 3.0.0
+\usepackage{mathrsfs}
+
+%% as per the requirement new theorem styles can be included as shown below
+\theoremstyle{thmstyleone}%
+\newtheorem{theorem}{Theorem}%  meant for continuous numbers
+%%\newtheorem{theorem}{Theorem}[section]% meant for sectionwise numbers
+%% optional argument [theorem] produces theorem numbering sequence instead of independent numbers for Proposition
+\newtheorem{proposition}[theorem]{Proposition}% 
+
+\theoremstyle{thmstyletwo}%
+\newtheorem{example}{Example}%
+\newtheorem{remark}{Remark}%
+
+\theoremstyle{thmstylethree}%
+\newtheorem{definition}{Definition}%
+
+((* endblock packages -*))
+
+((*- block definitions -*))
+% Define a new font size between tiny and scriptsize
+\makeatletter
+\newcommand\codesize{\@setfontsize\codesize{7pt}{8pt}}
+\makeatother
+% common color for the border for error outputs.
+\definecolor{outerrorborder}{HTML}{FFDFDF}
+\definecolor{errorbackgroundopaque}{HTML}{FFBFBF}
+\colorlet{errorbackground}{errorbackgroundopaque!20}
+% ANSI colors
+\definecolor{ansi-black}{HTML}{3E424D}
+\definecolor{ansi-black-intense}{HTML}{282C36}
+\definecolor{ansi-red}{HTML}{E75C58}
+\definecolor{ansi-red-intense}{HTML}{B22B31}
+\definecolor{ansi-green}{HTML}{00A250}
+\definecolor{ansi-green-intense}{HTML}{007427}
+\definecolor{ansi-yellow}{HTML}{DDB62B}
+\definecolor{ansi-yellow-intense}{HTML}{B27D12}
+\definecolor{ansi-blue}{HTML}{208FFB}
+\definecolor{ansi-blue-intense}{HTML}{0065CA}
+\definecolor{ansi-magenta}{HTML}{D160C4}
+\definecolor{ansi-magenta-intense}{HTML}{A03196}
+\definecolor{ansi-cyan}{HTML}{60C6C8}
+\definecolor{ansi-cyan-intense}{HTML}{258F8F}
+\definecolor{ansi-white}{HTML}{C5C1B4}
+\definecolor{ansi-white-intense}{HTML}{A1A6B2}
+\definecolor{ansi-default-inverse-fg}{HTML}{FFFFFF}
+\definecolor{ansi-default-inverse-bg}{HTML}{000000}
+
+% Pygments definitions
+((( resources.latex.pygments_definitions )))
+
+% commands and environments needed by pandoc snippets
+% extracted from the output of `pandoc -s`
+\providecommand{\tightlist}{%
+    \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\newenvironment{Shaded}{}{}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.56,0.13,0.00}{{#1}}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textit{{#1}}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{{#1}}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.02,0.16,0.49}{{#1}}}
+\newcommand{\RegionMarkerTok}[1]{{#1}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+\newcommand{\NormalTok}[1]{{#1}}
+
+% Additional commands for more recent versions of Pandoc
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.53,0.00,0.00}{{#1}}}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.73,0.40,0.53}{{#1}}}
+\newcommand{\ImportTok}[1]{{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.73,0.13,0.13}{\textit{{#1}}}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.10,0.09,0.49}{{#1}}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.40,0.40,0.40}{{#1}}}
+\newcommand{\BuiltInTok}[1]{{#1}}
+\newcommand{\ExtensionTok}[1]{{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.74,0.48,0.00}{{#1}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.49,0.56,0.16}{{#1}}}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+% Define a nice break command that doesn't care if a line doesn't already
+% exist.
+\def\br{\hspace*{\fill} \\* }
+% Math Jax compatibility definitions
+\def\gt{>}
+\def\lt{<}
+
+% For linebreaks inside Verbatim environment from package fancyvrb.
+\makeatletter
+\newbox\Wrappedcontinuationbox
+\newbox\Wrappedvisiblespacebox
+\newcommand*\Wrappedvisiblespace {\textcolor{red}{\textvisiblespace}}
+\newcommand*\Wrappedcontinuationsymbol {\textcolor{red}{\llap{\tiny$\m@th\hookrightarrow$}}}
+\newcommand*\Wrappedcontinuationindent {3ex }
+\newcommand*\Wrappedafterbreak {\kern\Wrappedcontinuationindent\copy\Wrappedcontinuationbox}
+% Take advantage of the already applied Pygments mark-up to insert
+% potential linebreaks for TeX processing.
+%        {, <, #, %, $, ' and ": go to next line.
+%        _, }, ^, &, >, - and ~: stay at end of broken line.
+% Use of \textquotesingle for straight quote.
+\newcommand*\Wrappedbreaksatspecials {%
+    \def\PYGZus{\discretionary{\char`\_}{\Wrappedafterbreak}{\char`\_}}%
+    \def\PYGZob{\discretionary{}{\Wrappedafterbreak\char`\{}{\char`\{}}%
+    \def\PYGZcb{\discretionary{\char`\}}{\Wrappedafterbreak}{\char`\}}}%
+    \def\PYGZca{\discretionary{\char`\^}{\Wrappedafterbreak}{\char`\^}}%
+    \def\PYGZam{\discretionary{\char`\&}{\Wrappedafterbreak}{\char`\&}}%
+    \def\PYGZlt{\discretionary{}{\Wrappedafterbreak\char`\<}{\char`\<}}%
+    \def\PYGZgt{\discretionary{\char`\>}{\Wrappedafterbreak}{\char`\>}}%
+    \def\PYGZsh{\discretionary{}{\Wrappedafterbreak\char`\#}{\char`\#}}%
+    \def\PYGZpc{\discretionary{}{\Wrappedafterbreak\char`\%}{\char`\%}}%
+    \def\PYGZdl{\discretionary{}{\Wrappedafterbreak\char`\$}{\char`\$}}%
+    \def\PYGZhy{\discretionary{\char`\-}{\Wrappedafterbreak}{\char`\-}}%
+    \def\PYGZsq{\discretionary{}{\Wrappedafterbreak\textquotesingle}{\textquotesingle}}%
+    \def\PYGZdq{\discretionary{}{\Wrappedafterbreak\char`\"}{\char`\"}}%
+    \def\PYGZti{\discretionary{\char`\~}{\Wrappedafterbreak}{\char`\~}}%
+}
+% Some characters . , ; ? ! / are not pygmentized.
+% This macro makes them "active" and they will insert potential linebreaks
+\newcommand*\Wrappedbreaksatpunct {%
+    \lccode`\~`\.\lowercase{\def~}{\discretionary{\hbox{\char`\.}}{\Wrappedafterbreak}{\hbox{\char`\.}}}%
+    \lccode`\~`\,\lowercase{\def~}{\discretionary{\hbox{\char`\,}}{\Wrappedafterbreak}{\hbox{\char`\,}}}%
+    \lccode`\~`\;\lowercase{\def~}{\discretionary{\hbox{\char`\;}}{\Wrappedafterbreak}{\hbox{\char`\;}}}%
+    \lccode`\~`\:\lowercase{\def~}{\discretionary{\hbox{\char`\:}}{\Wrappedafterbreak}{\hbox{\char`\:}}}%
+    \lccode`\~`\?\lowercase{\def~}{\discretionary{\hbox{\char`\?}}{\Wrappedafterbreak}{\hbox{\char`\?}}}%
+    \lccode`\~`\!\lowercase{\def~}{\discretionary{\hbox{\char`\!}}{\Wrappedafterbreak}{\hbox{\char`\!}}}%
+    \lccode`\~`\/\lowercase{\def~}{\discretionary{\hbox{\char`\/}}{\Wrappedafterbreak}{\hbox{\char`\/}}}%
+    \catcode`\.\active
+    \catcode`\,\active
+    \catcode`\;\active
+    \catcode`\:\active
+    \catcode`\?\active
+    \catcode`\!\active
+    \catcode`\/\active
+    \lccode`\~`\~
+}
+\makeatother
+
+\let\OriginalVerbatim=\Verbatim
+\makeatletter
+\renewcommand{\Verbatim}[1][1]{%
+%\parskip\z@skip
+\sbox\Wrappedcontinuationbox {\Wrappedcontinuationsymbol}%
+\sbox\Wrappedvisiblespacebox {\FV@SetupFont\Wrappedvisiblespace}%
+\def\FancyVerbFormatLine ##1{\hsize\linewidth
+    \vtop{\raggedright\hyphenpenalty\z@\exhyphenpenalty\z@
+        \doublehyphendemerits\z@\finalhyphendemerits\z@
+        \strut ##1\strut}%
+}%
+% If the linebreak is at a space, the latter will be displayed as visible
+% space at end of first line, and a continuation symbol starts next line.
+% Stretch/shrink are however usually zero for typewriter font.
+\def\FV@Space {%
+    \nobreak\hskip\z@ plus\fontdimen3\font minus\fontdimen4\font
+    \discretionary{\copy\Wrappedvisiblespacebox}{\Wrappedafterbreak}
+    {\kern\fontdimen2\font}%
+}%
+
+% Allow breaks at special characters using \PYG... macros.
+\Wrappedbreaksatspecials
+% Breaks at punctuation characters . , ; ? ! and / need catcode=\active
+\OriginalVerbatim[#1,codes*=\Wrappedbreaksatpunct]%
+}
+\makeatother
+
+
+((* endblock definitions -*))
+
+
+
+((= Set up for latex document =))
+
+((* block body *))
+\begin{document}
+((( super() )))
+((* endblock body *))
+
+((*- block predoc -*))
+
+((*- block maketitle -*))
+((*- if nb.metadata.labpaper.title -*))
+\title{((( nb.metadata.labpaper.title )))}
+((* endif *))
+
+((*- if nb.metadata.labpaper.authors -*))
+((* for author in nb.metadata.labpaper.authors *))
+\author((*- if author.is_corresponding -*))*((* endif *))[((( author.affiliations|join(',') )))]{
+    ((*- if author.given_name -*))
+    ((( author.given_name )))
+    ((*- endif -*))
+    ((*- if author.particle -*))
+    \ ((( author.particle )))
+    ((*- endif -*))
+    ((*- if author.surname -*))
+    \ ((( author.surname )))
+    ((*- endif -*))
+    ((*- if author.suffix -*))
+    \ ((( author.suffix )))
+    ((*- endif -*))
+}
+((*- if author.email -*))
+\email{((( author.email )))}
+((*- else -*))
+\nomail
+((*- endif -*))
+((*- if author.equal_contribution -*))
+\equalcont{These authors contributed equally to this work.}
+((*- endif -*))
+((* endfor *))
+
+((* for affil in nb.metadata.labpaper.affiliations *))
+\affil[((( affil.id )))]{
+    ((*- if affil.address.department -*))
+    \orgdiv{((( affil.address.department )))},
+    ((*- endif -*))
+    ((*- if affil.address.organization -*))
+    \ \orgname{((( affil.address.organization )))}, 
+    ((*- endif -*))
+    \ \orgaddress{
+        ((*- if affil.address.street -*))
+        \street{((( affil.address.street )))}, 
+        ((*- endif -*))
+        ((*- if affil.address.city -*))
+        \ \city{((( affil.address.city )))}, 
+        ((*- endif -*))
+        ((*- if affil.address.postcode -*))
+        \ \postcode{((( affil.address.postcode )))}, 
+        ((*- endif -*))
+        ((*- if affil.address.state -*))
+        \ \state{((( affil.address.state )))}, 
+        ((*- endif -*))
+        ((*- if affil.address.country -*))
+        \ \country{((( affil.address.country )))}
+        ((*- endif -*))
+    }
+}
+((* endfor *))
+((* endif *))
+
+((* if nb.metadata.labpaper.abstract *))
+\abstract{((( nb.metadata.labpaper.abstract )))}
+((* endif *))
+
+((*- if nb.metadata.labpaper.keywords -*))
+\keywords{((( nb.metadata.labpaper.keywords|join(', ') )))}
+((* endif *))
+
+\maketitle
+((*- endblock maketitle -*))
+((*- endblock predoc -*))
+
+((= Default mechanism for rendering figures ------------------------------------| =))
+
+% Default mechanism for rendering figures -------------------------------------- %
+((* block data_png -*))
+((*- set filename = output.metadata.filenames['image/png'] | posix_path -*))
+(((- render_figure(filename, output.metadata) )))
+((*- endblock data_png *))
+
+((*- block data_jpg -*))
+((*- set filename = output.metadata.filenames['image/jpeg'] | posix_path -*))
+(((- render_figure(filename, output.metadata) )))
+((*- endblock data_jpg -*))
+
+((* block data_svg *))
+((*- set filename = output.metadata.filenames['image/svg+xml'] | posix_path -*))
+(((- render_figure(filename, output.metadata) )))
+((*- endblock data_svg -*))
+
+((* block data_pdf *))
+((*- set filename = output.metadata.filenames['application/pdf'] | posix_path -*))
+(((- render_figure(filename, output.metadata) )))
+((*- endblock data_pdf -*))
+
+% Draw a figure using the graphicx package.
+% Macro for rendering figures with consistent styling
+((*- macro render_figure(filename, metadata) *))
+
+\begin{figure}[(((- nb.metadata.labpaper.figure_placement -)))]
+    \centering
+    \includegraphics[width=((*- if metadata.get('width') -*))((( metadata['width'] )))((*- else -*))0.9((*- endif -*))\textwidth]{((( filename )))}
+    ((*- if metadata.get('caption') -*))
+    \caption{(((- metadata['caption'] | escape_latex | ansi2latex -)))}
+    ((*- endif -*))
+    \label{(((- metadata['label'] -)))}
+\end{figure}
+((* endmacro *))
+
+
+((= MODULAR BLOCK DEFINITIONS------------------------------------------------| =))
+
+((*- if charlim is not defined -*))
+    ((* set charlim = 80 *))
+((*- endif -*))
+
+% Displaying code source
+((* block input *))
+((* if cell.metadata.labpaper.processed_tags.get('hide', True)-*))
+% Input~[((*- if cell.cell_type == 'code' -*))((( cell.execution_count )))((*- else -*))Not Executed((*- endif -*))]
+((( cell.source | wrap_text(charlim) | comment_lines )))
+
+((*- else -*))
+((*- if cell.metadata.labpaper.processed_tags['figure'] or
+cell.metadata.labpaper.processed_tags['table'] or
+cell.metadata.labpaper.processed_tags['stable'] -*))
+((*- set is_figure = cell.metadata.labpaper.processed_tags['figure'] -*))
+((*- set is_table = cell.metadata.labpaper.processed_tags['table'] or cell.metadata.labpaper.processed_tags['stable'] -*))
+((*- else -*))
+((*- set is_figure = False -*))
+((*- set is_table = False -*))
+((*- set is_stable = False -*))
+((*- endif -*))
+
+\begin{figure}[htb]
+    \centering
+    \begin{minipage}{0.9\textwidth}
+    \begin{scriptsize} 
+    \begin{Verbatim}[commandchars=\\\{\}]
+((( cell.source | wrap_text(charlim) | highlight_code(strip_verbatim=True) )))
+    \end{Verbatim}
+    \end{scriptsize}
+    \end{minipage}
+((* if is_figure *))
+    \caption{((( cell.metadata.labpaper.caption )))}\label{((( cell.metadata.labpaper.label )))}
+((* elif is_table *))
+    \caption{((( cell.metadata.labpaper.caption )))}\label{((( cell.metadata.labpaper.label )))} 
+((* else -*))
+    \caption{((( cell.metadata.labpaper.caption | default('Source Code.') )))}\label{((( cell.metadata.labpaper.label | default('code:{:02d}'.format(loop.index0)) )))}
+((*- endif *))
+\end{figure}
+((*- endif -*))
+((*- endblock input *))
+
+% Displaying simple data text
+((* block data_text *))
+((( output.data['text/plain'] | trim('\"\'') | trim() | citation2latex | strip_files_prefix | convert_pandoc('markdown+tex_math_double_backslash+raw_tex', 'latex') )))
+((* endblock data_text *))
+
+% Display python error text with colored frame (saves printer ink vs bkgnd)
+((* block error *))
+\begin{figure}[htb]
+    \centering
+    \begin{minipage}{0.9\textwidth}
+    \begin{codesize}
+    \begin{Verbatim}[commandchars=\\\{\}, frame=single, framerule=2mm, rulecolor=\color{errorbackground}]
+((( super() )))
+    \end{Verbatim}
+    \end{codesize}
+    \end{minipage}
+    \caption{((( cell.metadata.labpaper.caption | default('Runtime error.') )))}\label{((( cell.metadata.labpaper.label | default('error:{:02d}'.format(loop.index0)) )))}
+\end{figure}
+((* endblock error *))
+
+% Display error lines with coloring
+((*- block traceback_line -*))
+((( line | escape_latex | ansi2latex )))
+((* endblock traceback_line *))
+
+% Display stream output as formatted text
+((* block stream *))
+((( output.text | trim() | citation2latex | strip_files_prefix | convert_pandoc('markdown+tex_math_double_backslash+raw_tex', 'latex') -)))
+((* endblock stream *))
+
+% Display latex
+((*- block data_latex -*))
+((*- if cell.metadata.labpaper.processed_tags.stable or cell.metadata.labpaper.processed_tags.table -*))
+\begin{((*- if cell.metadata.labpaper.processed_tags.stable -*))sideways((*- endif -*))table}((*- if not cell.metadata.labpaper.processed_tags.stable -*))[h]((*- endif -*))
+\caption{((( output.metadata.get('caption', '') )))}
+\label{((( output.metadata.label )))}
+((( output.data['text/latex'] | strip_files_prefix | ansi2latex )))
+((*- if output.metadata.get('footer') -*))
+((*- for footnote in output.metadata.footer -*))
+((*- if footnote.get('number') -*))
+\footnotetext[((( footnote.number )))]{((( footnote.text )))}
+((*- else -*))
+\footnotetext{((( footnote.text )))}
+((*- endif -*))
+((*- endfor -*))
+((*- endif -*))
+
+\end{((*- if cell.metadata.labpaper.processed_tags.stable -*))sideways((*- endif -*))table}
+((*- else -*))
+((( output.data['text/latex'] | strip_files_prefix | ansi2latex -)))
+((*- endif -*))
+((* endblock data_latex *))
+
+% Display markdown from output
+((*- block data_markdown -*))
+((( output.data['text/markdown'] | citation2latex | strip_files_prefix | convert_pandoc('markdown+tex_math_double_backslash+raw_tex', 'latex'))))
+((* endblock data_markdown *))
+
+
+% Redirect execute_result to display data priority.
+((*- block execute_result scoped -*))
+((* block data_priority scoped *))
+((( super() )))
+((* endblock *))
+((*- endblock execute_result -*))
+
+% Render markdown cells
+((*- block markdowncell scoped -*))
+((*- if cell.metadata.labpaper.get('parsed_tags') and 'table' in cell.metadata.labpaper.parsed_tags -*))
+((( cell.source | citation2latex | strip_files_prefix | convert_pandoc('markdown+tex_math_double_backslash+raw_tex', 'latex') )))
+((*- else -*))
+((( cell.source | citation2latex | strip_files_prefix | convert_pandoc('markdown+tex_math_double_backslash', 'json',extra_args=[]) | resolve_references | convert_explicitly_relative_paths | convert_pandoc('json','latex'))))
+((* endif *))
+((* endblock markdowncell *))
+
+% Don't display unknown types
+((* block unknowncell scoped *))
+% Unknown cell ((( cell.cell_type )))
+((* endblock unknowncell *))
+
+((*- block postdoc -*))
+((*- block bibliography -*))((*- endblock bibliography *))
+\end{document}
+((* endblock postdoc -*))
+
