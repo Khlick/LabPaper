@@ -1,42 +1,64 @@
 # Filters
 
-Filters in LabPaper are specialized functions that transform content during the export process. They provide fine-grained control over how different elements are rendered in the final document.
+LabPaper provides several custom filters that can be used with nbconvert to modify text during the conversion process. These filters are automatically available when using any of the LabPaper exporters.
 
-## Core Filters
+## Available Filters
 
-The package includes several built-in filters for common transformations:
+### newline_block
 
-- Text formatting and styling
-- Citation processing
-- Figure and table handling
-- Mathematical equation formatting
-- Code block styling
+Ensures that a block of text always starts with a newline. This is particularly useful for LaTeX output where you want to ensure proper spacing between blocks of content.
 
-## Usage in Templates
+```python
+from labpaper.filters import newline_block
 
-Filters can be used in templates using the Jinja2 pipe syntax:
+# Input
+text = "Some text"
 
-~~~jinja
-{{ cell.source | format_math }}
-{{ metadata.authors | format_authors }}
-~~~
+# Output
+"""
 
-## Custom Filters
+Some text
 
-You can create custom filters by:
+"""
+```
 
-1. Creating a new Python function
-2. Registering it with the template engine
-3. Using it in your templates
+### latex_internal_references
 
-Example of a custom filter:
+Converts markdown-style internal references to LaTeX autoref commands. This allows you to use markdown-style links for cross-references in your notebook that will be properly converted to LaTeX references.
 
-~~~python
-def custom_format(text):
-    # Your formatting logic here
-    return formatted_text
+```python
+from labpaper.filters import latex_internal_references
 
-c.LabPaperTemplate.filters = {
-    'custom_format': custom_format
-}
-~~~ 
+# Input
+text = "See [Figure 1](#fig:example) for details"
+
+# Output
+"See \autoref{fig:example} for details"
+```
+
+### comment_lines
+
+Adds a comment character and space to the beginning of every line in the text. This is useful for converting text blocks into comments in the output format.
+
+```python
+from labpaper.filters import comment_lines
+
+# Input
+text = "Line 1\nLine 2"
+
+# Output with default comment char '%'
+"% Line 1\n% Line 2"
+
+# Can specify different comment char
+comment_lines(text, comment_char="#")
+"# Line 1\n# Line 2"
+```
+
+## Using Filters
+
+These filters are automatically available in LabPaper templates. If you're creating custom templates, you can access these filters through the template environment:
+
+```jinja
+{{ cell.source | newline_block }}
+{{ cell.source | latex_internal_references }}
+{{ cell.source | comment_lines }} 
