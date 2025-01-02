@@ -57,6 +57,11 @@ class LabPaperBaseExporter(LatexExporter):
         help="Shell command used to run bibtex."
     ).tag(config=True)
     
+    no_bib = Bool(
+        default_value=False,
+        help="Whether to suppress the bibliography"
+    ).tag(config=True)
+    
     @property
     def default_config(self):
         """Default configuration for LabPaper base exporter"""
@@ -333,7 +338,7 @@ class LabPaperBaseExporter(LatexExporter):
         latex_command = [self.latex_engine] + self.latex_command
         self.log.info(f"Running LaTeX command: {latex_command}")
         self._run_command(latex_command, tex_file)
-        if has_bib:
+        if has_bib and not self.no_bib:
             self.log.info(f"Running bibtex command: {self.bib_command}")
             self._run_command(self.bib_command, tex_base)
         self.log.info(f"Running LaTeX command again (2 times): {latex_command}")

@@ -78,6 +78,11 @@ class SpringerNaturePDF(LabPaperBaseExporter):
         help="Whether to show line numbers in the code blocks"
     ).tag(config=True)
     
+    no_bib = Bool(
+        default_value=False,
+        help="Whether to suppress the bibliography"
+    ).tag(config=True)
+    
     @property
     def default_config(self):
         """Default configuration for LabPaper base exporter"""
@@ -173,6 +178,11 @@ class SpringerNaturePDF(LabPaperBaseExporter):
         bibstyle = resolve_string(
             config.SpringerNaturePDF.bibliography_style,
             self.bibliography_style
+        )
+        # Resolve no_bib to a boolean
+        self.no_bib = resolve_boolean(
+            config.SpringerNaturePDF.no_bib,
+            self.no_bib
         )
         # Dynamically parse .bst file names from texmf/bibtex/bst/ using self._get_texmf_path()
         texmf_bst_directory = os.path.join(self._get_texmf_path(), 'bibtex', 'bst')

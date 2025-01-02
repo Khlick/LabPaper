@@ -1,6 +1,6 @@
 """LabPaper - A Jupyter notebook exporter for academic papers."""
 
-__version__ = "1.0.5"
+__version__ = "1.0.6"
 
 from .exporters import SpringerNaturePDF
 from .preprocessors import PythonMarkdownPreprocessor, PygmentizePreprocessor
