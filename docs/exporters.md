@@ -33,6 +33,9 @@ The SpringerNaturePDF exporter supports the following configuration options whic
   
 - `line_numbers` (bool, default: False)
   - Whether to show line numbers in code blocks
+  
+- `no_bib` (bool, default: False)
+  - Whether to suppress the bibliography
 
 #### Cell Tags
 
