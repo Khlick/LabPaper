@@ -326,17 +326,18 @@
 
 % Displaying code source
 ((* block input *))
-((* if cell.metadata.labpaper.processed_tags.get('hide', True)-*))
+((* if cell.metadata.labpaper.processed_tags.get('hide', True) *))
 % Input~[((*- if cell.cell_type == 'code' -*))((( cell.execution_count )))((*- else -*))Not Executed((*- endif -*))]
+
 ((( cell.source | wrap_text(charlim) | comment_lines )))
 
-((*- else -*))
-((*- if cell.metadata.labpaper.processed_tags['figure'] or
+((* else *))
+((* if cell.metadata.labpaper.processed_tags['figure'] or
 cell.metadata.labpaper.processed_tags['table'] or
 cell.metadata.labpaper.processed_tags['stable'] -*))
 ((*- set is_figure = cell.metadata.labpaper.processed_tags['figure'] -*))
 ((*- set is_table = cell.metadata.labpaper.processed_tags['table'] or cell.metadata.labpaper.processed_tags['stable'] -*))
-((*- else -*))
+((* else *))
 ((*- set is_figure = False -*))
 ((*- set is_table = False -*))
 ((*- set is_stable = False -*))
@@ -359,7 +360,7 @@ cell.metadata.labpaper.processed_tags['stable'] -*))
     \caption{((( cell.metadata.labpaper.caption | default('Source Code.') )))}\label{((( cell.metadata.labpaper.label | default('code:{:02d}'.format(loop.index0)) )))}
 ((*- endif *))
 \end{figure}
-((*- endif -*))
+((* endif *))
 ((*- endblock input *))
 
 % Displaying simple data text
