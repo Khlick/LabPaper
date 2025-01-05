@@ -342,7 +342,7 @@ cell.metadata.labpaper.processed_tags['stable'] -*))
 ((*- set is_stable = False -*))
 ((*- endif -*))
 
-\begin{figure}[htb]
+\begin{figure}[(((- nb.metadata.labpaper.figure_placement -)))]
     \centering
     \begin{minipage}{0.9\textwidth}
     \begin{scriptsize} 
@@ -369,7 +369,7 @@ cell.metadata.labpaper.processed_tags['stable'] -*))
 
 % Display python error text with colored frame (saves printer ink vs bkgnd)
 ((* block error *))
-\begin{figure}[htb]
+\begin{figure}[(((- nb.metadata.labpaper.figure_placement -)))]
     \centering
     \begin{minipage}{0.9\textwidth}
     \begin{codesize}
@@ -395,7 +395,7 @@ cell.metadata.labpaper.processed_tags['stable'] -*))
 % Display latex
 ((*- block data_latex -*))
 ((*- if cell.metadata.labpaper.processed_tags.stable or cell.metadata.labpaper.processed_tags.table -*))
-\begin{((*- if cell.metadata.labpaper.processed_tags.stable -*))sideways((*- endif -*))table}((*- if not cell.metadata.labpaper.processed_tags.stable -*))[h]((*- endif -*))
+\begin{((*- if cell.metadata.labpaper.processed_tags.stable -*))sideways((*- endif -*))table}((*- if not cell.metadata.labpaper.processed_tags.stable -*))[(((- nb.metadata.labpaper.figure_placement -)))]((*- endif -*))
 \caption{((( output.metadata.get('caption', '') )))}
 \label{((( output.metadata.label )))}
 ((( output.data['text/latex'] | strip_files_prefix | ansi2latex )))

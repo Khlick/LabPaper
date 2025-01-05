@@ -260,18 +260,33 @@
 \setlength\footnotesep{7\p@}%
 \setlength{\skip\footins}{18\p@ \@plus 6\p@ \@minus 3\p@}%
 %
+% \RequirePackage[%
+%     reversemp,
+%     paperwidth=210mm,
+%     paperheight=297mm,
+%     top={26mm},
+%     headheight={12pt},
+%     headsep={5.15mm},
+%     text={160mm,216mm},
+%     marginparsep=5mm,
+%     marginparwidth=12mm,
+%     bindingoffset=6mm,
+%     footskip=10.13mm,twocolumn]{geometry}%
+
 \RequirePackage[%
     reversemp,
-    paperwidth=210mm,
-    paperheight=297mm,
-    top={26mm},
+    paperwidth=8.5in,
+    paperheight=11in,
+    top={20mm},        % Decreased from 26mm to 20mm
     headheight={12pt},
-    headsep={5.15mm},
-    text={160mm,216mm},
-    marginparsep=5mm,
-    marginparwidth=12mm,
-    bindingoffset=6mm,
-    footskip=10.13mm,twocolumn]{geometry}%
+    headsep={4mm},     % Slightly decreased head separation
+    text={170mm,240mm},% Increased text width and height for smaller margins
+    marginparsep=4mm,  % Reduced margin paragraph separation
+    marginparwidth=10mm, % Reduced margin paragraph width
+    bindingoffset=5mm, % Slightly reduced binding offset
+    footskip=9mm,      % Slightly decreased footskip
+    twocolumn]{geometry}%
+
 %
 \renewcommand\footnoterule{%
   \kern3\p@%
@@ -280,34 +295,71 @@
 %
 \else%
 %% For single column used smallcond design trim and page size %%
+% \RequirePackage[%
+%     reversemp,
+%     paperwidth=210mm,
+%     paperheight=297mm,
+%     top={26mm},
+%     headheight={5.5pt},
+%     headsep={5.6mm},
+%     text={31pc,194.25mm},
+%     marginparsep=5mm,
+%     marginparwidth=12mm,
+%     bindingoffset=6mm,
+%     footskip=10mm]{geometry}
+%
+    % \setlength\maxdepth{0pt}%
+    % \setlength\columnsep{5mm}%
+    % \setlength{\marginparsep}{5mm}%
+    % \setlength{\marginparwidth}{12mm}%
+    % \setlength\footnotesep{5.75\p@}%
+    % \setlength{\skip\footins}{8\p@ \@plus 4\p@ \@minus 0\p@}%
+%
+% \renewcommand\footnoterule{%
+%   \kern3\p@%
+%   \ifodd\c@page%
+%      \hrule \@height.2mm \@width\textwidth%
+%   \else%
+%      \hrule \@height.2mm \@width37mm
+%   \fi%
+%   \kern5.5\p@}%
+
+% For single column using US Letter design trim and page size with different margins for odd/even pages %%
 \RequirePackage[%
     reversemp,
-    paperwidth=210mm,
-    paperheight=297mm,
-    top={26mm},
+    paperwidth=8.5in,
+    paperheight=11in,
+    top={20mm},
     headheight={5.5pt},
     headsep={5.6mm},
-    text={31pc,194.25mm},
+    text={35pc,240mm},
+    inner={20mm},        % Reduced left margin on even pages (inner margin)
+    outer={20mm},        % Reduced right margin on odd pages (outer margin)
     marginparsep=5mm,
     marginparwidth=12mm,
     bindingoffset=6mm,
-    footskip=10mm]{geometry}
-%
-    \setlength\maxdepth{0pt}%
-    \setlength\columnsep{5mm}%
-    \setlength{\marginparsep}{5mm}%
-    \setlength{\marginparwidth}{12mm}%
-    \setlength\footnotesep{5.75\p@}%
-    \setlength{\skip\footins}{8\p@ \@plus 4\p@ \@minus 0\p@}%
-%
+    footskip=10mm,
+    twoside               % Enables different margins for odd/even pages
+]{geometry}
+
+% Additional spacing settings
+\setlength\maxdepth{0pt}%
+\setlength\columnsep{5mm}%
+\setlength{\marginparsep}{4mm}%
+\setlength{\marginparwidth}{10mm}%
+\setlength\footnotesep{5.75\p@}%
+\setlength{\skip\footins}{8\p@ \@plus 4\p@ \@minus 0\p@}%
+
+% Footnote rule
 \renewcommand\footnoterule{%
   \kern3\p@%
   \ifodd\c@page%
      \hrule \@height.2mm \@width\textwidth%
   \else%
-     \hrule \@height.2mm \@width37mm
+     \hrule \@height.2mm \@width42mm
   \fi%
   \kern5.5\p@}%
+
 %
 \fi%
 %
