@@ -7,6 +7,7 @@ from tempfile import TemporaryDirectory
 
 from traitlets import Bool, Unicode, List, default, Instance
 from traitlets.config import Config
+import logging
 
 # NBConvert
 from nbconvert.exporters import LatexExporter
@@ -35,7 +36,10 @@ def prepend_to_env_search_path(varname, value, envdict):
 
 class LabPaperBaseExporter(LatexExporter):
     """Base exporter class for LabPaper that extends nbconvert's LaTeX exporter."""
-    
+    def __init__(self, config=None, **kw):
+        super().__init__(config=config, **kw)
+        self.log = logging.getLogger(__name__)
+        
     # Metadata processing configuration
     process_metadata = Bool(
         True,
