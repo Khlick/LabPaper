@@ -9,7 +9,7 @@ authors = [
     {name = "Khris Griffis, Ph.D.", email = "khris.griffis.phd@gmail.com"}
 ]
 description = "LabPaper - A Jupyter notebook extension for exporting notebooks to academic papers."
-urls = {"Homepage" = "https://github.com/khrisgriffis/labpaper"}
+urls = {"Homepage" = "https://github.com/khrisgriffis/labpaper", "Documentation" = "https://labpaper.readthedocs.io"}
 readme = "README.md"
 requires-python = ">=3.11"
 classifiers = [

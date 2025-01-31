@@ -1,10 +1,11 @@
 """Base exporter class for LabPaper."""
 import os
+import sys
 import shutil
 import subprocess
 from tempfile import TemporaryDirectory
 
-from traitlets import Bool, Unicode, List, default
+from traitlets import Bool, Unicode, List, default, Instance
 from traitlets.config import Config
 
 # NBConvert
@@ -21,6 +22,16 @@ custom_filters = {
     "newline_block": labpaper_filters.newline_block,
     "latex_internal_references": labpaper_filters.latex_internal_references,
 }
+
+def prepend_to_env_search_path(varname, value, envdict):
+    """Add value to the environment variable varname in envdict
+
+    e.g. prepend_to_env_search_path('BIBINPUTS', '/home/sally/foo', os.environ)
+    """
+    if not value:
+        return  # Nothing to add
+
+    envdict[varname] = value + os.pathsep + envdict.get(varname, "")
 
 class LabPaperBaseExporter(LatexExporter):
     """Base exporter class for LabPaper that extends nbconvert's LaTeX exporter."""
@@ -62,6 +73,10 @@ class LabPaperBaseExporter(LatexExporter):
         help="Whether to suppress the bibliography"
     ).tag(config=True)
     
+    # Location to find local files as well
+    texinputs = Unicode(help="texinputs dir. A notebook's directory is added")
+    writer = Instance("nbconvert.writers.FilesWriter", args=(), kw={"build_directory": "."})
+
     @property
     def default_config(self):
         """Default configuration for LabPaper base exporter"""
@@ -125,7 +140,7 @@ class LabPaperBaseExporter(LatexExporter):
         for cell in nb.cells:
             if cell.cell_type == 'markdown':
                 # Check for common citation patterns
-                if '@' in cell.source or '\\cite{' in cell.source:
+                if '\\cite{' in cell.source:
                     return True
         return False
 
@@ -134,6 +149,7 @@ class LabPaperBaseExporter(LatexExporter):
         for cell in nb.cells:
             if cell.cell_type == 'markdown':
                 if '\\bibliography{' in cell.source:
+                    self.log.debug(f"Bibliography command found in cell with index {nb.cells.index(cell)}")
                     return True
             elif cell.cell_type == 'code':
                 # Check outputs for LaTeX that might contain bibliography commands
@@ -156,21 +172,42 @@ class LabPaperBaseExporter(LatexExporter):
         
         cmd = shutil.which(command[0])
         if cmd is None:
-            raise OSError(f"{command[0]} not found on PATH")
-        
+            link = "https://nbconvert.readthedocs.io/en/latest/install.html#installing-tex"
+            msg = (
+                f"{command[0]} not found on PATH, if you have not installed "
+                f"{command[0]} you may need to do so. Find further instructions "
+                f"at {link}."
+            )
+            raise OSError(msg)
+        shell = sys.platform == "win32"
+        if shell:
+            command = subprocess.list2cmdline(command)  # type:ignore[assignment]
+        env = os.environ.copy()
+        prepend_to_env_search_path("TEXINPUTS", self.texinputs, env)
+        prepend_to_env_search_path("BIBINPUTS", self.texinputs, env)
+        prepend_to_env_search_path("BSTINPUTS", self.texinputs, env)
+
         self.log.info(f"Running {command[0]} {count} time(s): {command}")
         for _ in range(count):
             try:
-                output = subprocess.run(
-                    command, stdout=subprocess.PIPE, 
-                    stderr=subprocess.STDOUT, 
-                    check=True, 
+                completed_process = subprocess.run(
+                    command,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.STDOUT,
+                    shell=shell,  # noqa: S603
+                    env=env,
+                    check=True,
                     text=True
-                    )
-                self.log.debug(output.stdout)
+                )
+                out = completed_process.stdout
+                if completed_process.returncode != 0:
+                    self.log.critical("%s failed: %s\n%s", command[0], command, out)
+                    return False  # failure
             except subprocess.CalledProcessError as e:
                 self.log.error(f"Command failed with output:\n{e.output}")
                 raise LatexFailed(e.output)
+        return True
+            
     
 
     # Base methods for subclasses to implement, these tend to need super() calls
@@ -221,13 +258,13 @@ class LabPaperBaseExporter(LatexExporter):
         # Get notebook information
         notebook_name = resources['metadata'].get('name', 'notebook')
         notebook_path = os.path.abspath(resources['metadata'].get('path', ''))
+        self.texinputs = notebook_path
         
         # Check for bibliography
         if not hasattr(self, '_needs_bibliography'):
             has_citations = self._has_citations(nb)
             has_bib_commands = self._has_bibliography_command(nb)
-            self._needs_bibliography = has_citations and not has_bib_commands
-        
+            self._needs_bibliography = has_citations and not has_bib_commands        
 
         # Create output directory with same name as notebook
         output_dir = os.path.join(notebook_path, notebook_name)
@@ -265,11 +302,11 @@ class LabPaperBaseExporter(LatexExporter):
                     
                     # Copy generated PDF to notebook directory
                     pdf_file = os.path.splitext(tex_file)[0] + '.pdf'
-                    if os.path.isfile(pdf_file):
-                        pdf_dest = os.path.join(notebook_path, os.path.basename(pdf_file))
-                        shutil.copy2(pdf_file, pdf_dest)
-                    else:
+                    if not os.path.isfile(pdf_file):
                         raise LatexFailed("PDF file not produced")
+                    self.log.info("PDF successfully created")
+                    with open(pdf_file, "rb") as f:
+                        pdf_data = f.read()
                 except Exception as e:
                     self.log.error(f"LaTeX compilation failed: {str(e)}")
                     self.log.info(f"LaTeX source files are available in: {output_dir}")
@@ -279,7 +316,15 @@ class LabPaperBaseExporter(LatexExporter):
                     shutil.rmtree(td, ignore_errors=True)
                     self.log.info(f"LaTeX source files are available in: {output_dir}")
                 
-        return latex, resources
+        # convert output extension to pdf
+        # the writer above required it to be tex
+        resources["output_extension"] = ".pdf"
+        # clear figure outputs and attachments, extracted by latex export,
+        # so we don't claim to be a multi-file export.
+        resources.pop("outputs", None)
+        resources.pop("attachments", None)
+
+        return pdf_data, resources
 
     def setup_support_files(self, td, notebook_name, notebook_path):
         """Setup support files in temporary directory."""
@@ -309,6 +354,7 @@ class LabPaperBaseExporter(LatexExporter):
                     break
             if not bib_success:
                 self.log.warning("No bibliography file found. Looked for: \n" + "\n".join(f"- {loc}" for loc in bib_locations))
+                self._needs_bibliography = False
             # Check for bibliography style file
             style_matches = [f for f in os.listdir(bibtex_path) 
                             if f.startswith(f"{self.bibliography_style}.") 
@@ -338,11 +384,12 @@ class LabPaperBaseExporter(LatexExporter):
         latex_command = [self.latex_engine] + self.latex_command
         self.log.info(f"Running LaTeX command: {latex_command}")
         self._run_command(latex_command, tex_file)
-        if has_bib and not self.no_bib:
-            self.log.info(f"Running bibtex command: {self.bib_command}")
-            self._run_command(self.bib_command, tex_base)
-        self.log.info(f"Running LaTeX command again (2 times): {latex_command}")
-        self._run_command(latex_command, tex_file, count=2)
+        if not self.no_bib:
+            if has_bib and self._run_command(self.bib_command, tex_base):
+                self._run_command(latex_command, tex_file)
+            
+        self.log.info(f"Running LaTeX command again: {latex_command}")
+        self._run_command(latex_command, tex_file)
 
     # Abstract methods for subclasses to implement
     def process_cell_tags(self, tags): return {}
