@@ -311,8 +311,8 @@
     \centering
     \includegraphics[width=((*- if metadata.get('width') -*))((( metadata['width'] )))((*- else -*))0.9((*- endif -*))\textwidth]{((( filename )))}
     ((*- if metadata.get('caption') -*))
-    \caption{(((- metadata['caption'] | escape_latex | ansi2latex -)))}
-    ((*- endif -*))
+    \caption{(((- metadata['caption'] | citation2latex | strip_files_prefix | convert_pandoc('markdown+tex_math_double_backslash+raw_tex', 'latex') | default('Uncaptioned Figure') -)))}
+    ((*- endif *))
     \label{(((- metadata['label'] -)))}
 \end{figure}
 ((* endmacro *))
@@ -353,11 +353,11 @@ cell.metadata.labpaper.processed_tags['stable'] -*))
     \end{scriptsize}
     \end{minipage}
 ((* if is_figure *))
-    \caption{((( cell.metadata.labpaper.caption )))}\label{((( cell.metadata.labpaper.label )))}
+    \caption{((( cell.metadata.labpaper.caption | citation2latex | strip_files_prefix | convert_pandoc('markdown+raw_tex', 'latex') | default('Uncaptioned Figure') )))}\label{((( cell.metadata.labpaper.label )))}
 ((* elif is_table *))
-    \caption{((( cell.metadata.labpaper.caption )))}\label{((( cell.metadata.labpaper.label )))} 
+    \caption{((( cell.metadata.labpaper.caption | citation2latex | strip_files_prefix | convert_pandoc('markdown+tex_math_double_backslash+raw_tex', 'latex') | default('Uncaptioned Table') )))}\label{((( cell.metadata.labpaper.label )))} 
 ((* else -*))
-    \caption{((( cell.metadata.labpaper.caption | default('Source Code.') )))}\label{((( cell.metadata.labpaper.label | default('code:{:02d}'.format(loop.index0)) )))}
+    \caption{((( cell.metadata.labpaper.caption | citation2latex | strip_files_prefix | convert_pandoc('markdown+tex_math_double_backslash+raw_tex', 'latex') | default('Source Code.') )))}\label{((( cell.metadata.labpaper.label | default('code:{:02d}'.format(loop.index0)) )))}
 ((*- endif *))
 \end{figure}
 ((* endif *))
@@ -379,7 +379,7 @@ cell.metadata.labpaper.processed_tags['stable'] -*))
     \end{Verbatim}
     \end{codesize}
     \end{minipage}
-    \caption{((( cell.metadata.labpaper.caption | default('Runtime error.') )))}\label{((( cell.metadata.labpaper.label | default('error:{:02d}'.format(loop.index0)) )))}
+    \caption{((( cell.metadata.labpaper.caption | citation2latex | strip_files_prefix | convert_pandoc('markdown+tex_math_double_backslash+raw_tex', 'latex') | default('Runtime error.') )))}\label{((( cell.metadata.labpaper.label | default('error:{:02d}'.format(loop.index0)) )))}
 \end{figure}
 ((* endblock error *))
 
@@ -393,11 +393,11 @@ cell.metadata.labpaper.processed_tags['stable'] -*))
 ((( output.text | trim() | citation2latex | strip_files_prefix | convert_pandoc('markdown+tex_math_double_backslash+raw_tex', 'latex') -)))
 ((* endblock stream *))
 
-% Display latex
+% Display latex (tables, etc.)
 ((*- block data_latex -*))
 ((*- if cell.metadata.labpaper.processed_tags.stable or cell.metadata.labpaper.processed_tags.table -*))
 \begin{((*- if cell.metadata.labpaper.processed_tags.stable -*))sideways((*- endif -*))table}((*- if not cell.metadata.labpaper.processed_tags.stable -*))[(((- nb.metadata.labpaper.figure_placement -)))]((*- endif -*))
-\caption{((( output.metadata.get('caption', '') )))}
+\caption{((( output.metadata.get('caption', '') | citation2latex | strip_files_prefix | convert_pandoc('markdown+tex_math_double_backslash+raw_tex', 'latex') | default('Uncaptioned Table') )))}
 \label{((( output.metadata.label )))}
 ((( output.data['text/latex'] | strip_files_prefix | ansi2latex )))
 ((*- if output.metadata.get('footer') -*))
