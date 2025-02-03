@@ -310,7 +310,7 @@
 \begin{figure}[(((- nb.metadata.labpaper.figure_placement -)))]
     \centering
     \includegraphics[width=((*- if metadata.get('width') -*))((( metadata['width'] )))((*- else -*))0.9((*- endif -*))\textwidth]{((( filename )))}
-    ((*- if metadata.get('caption') -*))
+    ((*- if metadata.get('caption') *))
     \caption{(((- metadata['caption'] | citation2latex | strip_files_prefix | convert_pandoc('markdown+tex_math_double_backslash+raw_tex', 'latex') | default('Uncaptioned Figure') -)))}
     ((*- endif *))
     \label{(((- metadata['label'] -)))}

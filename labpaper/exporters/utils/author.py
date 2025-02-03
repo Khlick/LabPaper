@@ -49,9 +49,12 @@ class Author:
 
     def __repr__(self):
         """Detailed string representation."""
+        name = f"{self.given_name} {self.surname}"
+        if self.suffix:
+            name += f", {self.suffix}"
         return (
             f"Author("
-            f"name='{self.given_name} {self.surname}', "
+            f"name='{name}', "
             f"email={self.email!r}, "
             f"affiliations={self.affiliations}, "
             f"corresponding={self.is_corresponding}, "
@@ -85,15 +88,16 @@ def parse_authors_section(cell_source: str) -> tuple[List[Author], List[Affiliat
         # Determine if this is an author line or a affiliation
         is_authorline = not (line.startswith(' ') or line.startswith('\t'))        
         if is_authorline:
-            author_match = re.match(r'(\d+)\.\s*([!*]*)?(.+?)(?:\s+e:\s*(\S+@\S+))?\s*$', stripped_line)
+            author_match = re.match(r'(\d+)\.\s*([!*]*)?(.+?)(?:,\s*(?!e:)(.+?))?(?:\s+e:\s*(\S+@\S+))?\s*$', stripped_line)
             if author_match:
-                _, qualifiers, name_str, email = author_match.groups()
+                _, qualifiers, name_str, suffix, email = author_match.groups()
                 author_name = HumanName(name_str.strip())
                 this_author = Author(
                     index= int(len(authors)+1),
                     given_name=author_name.first,
                     particle=author_name.middle,
                     surname=author_name.last,
+                    suffix=suffix,
                     email=email,
                     is_corresponding=bool(qualifiers and '*' in qualifiers),
                     equal_contribution=bool(qualifiers and '!' in qualifiers)
