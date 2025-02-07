@@ -58,10 +58,11 @@ class SpringerNaturePDF(LabPaperBaseExporter):
         help="Shell command used to run bibtex."
     ).tag(config=True)
     
+    # TODO: Make this float_placement rather than figure alone.
     figure_placement = Unicode(
-        default_value='htbp',
+        default_value='!htbp',
         help="LaTeX placement for figures"
-    ).tag(config=True)
+    ).tag(config=True) 
     
     separate_fig_and_tab_page = Bool(
         default_value=False,

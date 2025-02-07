@@ -60,7 +60,7 @@ class PythonMarkdownPreprocessor(Preprocessor):
             return bool(re.search(r'#.*\{\{\s*(.*?)\s*\}\}.*', cell.source))
         return False
 
-    def execute_code(self, code, cell_index):
+    def execute_code(self, code, cell_index, raises_exception=False):
         try:
             stdout_buffer = io.StringIO()
             stderr_buffer = io.StringIO()
@@ -73,14 +73,21 @@ class PythonMarkdownPreprocessor(Preprocessor):
                 self.log.critical(f"Cell {cell_index} stderr:\n{stderr_content}")
             return stdout_content
         except CellExecutionError as e:
-            self.log.warning(f"Execution error in cell {cell_index}: {str(e)}")
+            if raises_exception:
+                self.log.info(f"Expected exception in cell {cell_index}: {str(e)}")
+            else:
+                self.log.warning(f"Execution error in cell {cell_index}: {str(e)}")
         except Exception as e:
-            self.log.warning(f"Failed to execute cell {cell_index}: {str(e)}")
+            if raises_exception:
+                self.log.info(f"Expected exception in cell {cell_index}: {str(e)}")
+            else:
+                self.log.warning(f"Failed to execute cell {cell_index}: {str(e)}")
         return ""
 
     def execute_cell(self, cell, cell_index):
         if cell.cell_type == 'code' and ('skip-execution' not in cell.metadata.get('tags', [])):
-            self.execute_code(cell.source, cell_index)
+            raises_exception = 'raises-exception' in cell.metadata.get('tags', [])
+            self.execute_code(cell.source, cell_index, raises_exception=raises_exception)
 
     def evaluate_expression(self, expr, cell_index):
         try:
