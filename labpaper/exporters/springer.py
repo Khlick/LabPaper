@@ -107,6 +107,7 @@ class SpringerNaturePDF(LabPaperBaseExporter):
             'code': ['code', 'listing'],
             'hide': ['hide', 'hidden', 'no-display'],
             'show': ['show', 'display', 'visible', 'echo'],
+            'error': ['raises-exception', 'error', 'exception', 'runtime-error', 'runtime-exception']
         }
     
     @default('extra_template_basedirs')
@@ -323,11 +324,16 @@ class SpringerNaturePDF(LabPaperBaseExporter):
             # Process code
             if tags.get('show', False) and not (tags.get('figure', False) or tags.get('table', False) or tags.get('stable', False)):
                 self._process_code(cell, metadata, 'code')
+            
+            # Process raises-exception
+            if tags.get('error', False) and not tags.get('show', False):
+                self._process_raises_exception(cell, metadata)
                 
         return nb
     
     # FIGURE PROCESSING -------------------------------------------------------#
     def _has_figure_content(self, cell):
+
         if cell.cell_type == 'markdown':
             # Check for markdown image syntax with common image extensions
             return bool(re.search(
@@ -411,6 +417,28 @@ class SpringerNaturePDF(LabPaperBaseExporter):
         # Update metadata
         if float_type in ('fig', 'tab'):
             float_metadata['label'] = f'code:{float_metadata["label"]}'
+
+        cell_metadata.update(float_metadata)
+        return copy.deepcopy(float_metadata)
+    
+    # RAISES-EXCEPTION PROCESSING ----------------------------------------------#
+    def _process_raises_exception(self, cell, cell_metadata):
+        """Process raises-exception metadata."""
+        self._figure_count += 1
+        current_float_count = self._figure_count
+
+        float_metadata, updated_source = parse_metadata_content(cell.source, is_markdown=False)
+        cell.source = updated_source
+        # Update metadata
+        float_metadata.setdefault(
+            'exceptlabel',
+            f'code:{float_metadata.get("exceptlabel", f"{current_float_count:02d}")}'
+            )
+        float_metadata.setdefault(
+            'exceptcaption',
+            float_metadata.get("exceptcaption", "Runtime error.")
+            )
+
 
         cell_metadata.update(float_metadata)
         return copy.deepcopy(float_metadata)

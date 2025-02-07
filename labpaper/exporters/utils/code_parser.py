@@ -7,7 +7,7 @@ def parse_metadata_content(source: str, is_markdown: bool = False) -> tuple[dict
     to_remove = []
 
     # Define patterns based on cell type
-    allowed_tags = "|".join(["caption", "label", "footer", "width"])
+    allowed_tags = "|".join(["caption", "label", "footer", "width", "exceptcaption", "exceptlabel"])
     footnote_pattern = r'(?:\[(\d+(?:,\d+)*)\]\s*)?(.+?\|?)$'
     if is_markdown:
         single_pattern = r'<!--\s*@(%s):\s*([^|]+?)\s*-->$'

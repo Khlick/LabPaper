@@ -379,7 +379,7 @@ cell.metadata.labpaper.processed_tags['stable'] -*))
     \end{Verbatim}
     \end{codesize}
     \end{minipage}
-    \caption{((( cell.metadata.labpaper.caption | default('Runtime error.') | citation2latex | strip_files_prefix | convert_pandoc('markdown+tex_math_double_backslash+raw_tex', 'latex') )))}\label{((( cell.metadata.labpaper.label | default('error:{:02d}'.format(loop.index0)) )))}
+    \caption{((( cell.metadata.labpaper.exceptcaption | default('Runtime error.') | citation2latex | strip_files_prefix | convert_pandoc('markdown+tex_math_double_backslash+raw_tex', 'latex') )))}\label{((( cell.metadata.labpaper.exceptlabel | default('error:{:02d}'.format(loop.index0)) )))}
 \end{figure}
 ((* endblock error *))
 
